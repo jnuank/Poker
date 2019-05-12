@@ -1,3 +1,1 @@
-# Poker
-
-add description of Poker here
+# HaskellでPokerをペアプロ実装
