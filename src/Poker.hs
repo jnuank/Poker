@@ -15,6 +15,7 @@ instance Show Suit where
 data Rank
   = Ace | Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten
   | Jack | Queen | King
+  
   deriving (Eq, Enum)
 -- newtype PokerRank = PokerRank Rank
 -- instance Ord PokerRank where
