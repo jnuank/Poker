@@ -7,122 +7,57 @@ import Poker
 spec :: Spec
 spec = do
   describe "Poker" $ do
+    let
+      [   c_aS, c_2S, c_3S, c_4S, c_5S, c_6S, c_7S, c_8S, c_9S, c_10S, c_jS, c_qS, c_kS
+        , c_aH, c_2H, c_3H, c_4H, c_5H, c_6H, c_7H, c_8H, c_9H, c_10H, c_jH, c_qH, c_kH
+        , c_aC, c_2C, c_3C, c_4C, c_5C, c_6C, c_7C, c_8C, c_9C, c_10C, c_jC, c_qC, c_kC
+        , c_aD, c_2D, c_3D, c_4D, c_5D, c_6D, c_7D, c_8D, c_9D, c_10D, c_jD, c_qD, c_kD]
+        = [Card suit rank | suit <- [Spade, Heart, Club, Diamond], rank <- [Ace .. King]]
+
     describe "カードの文字列表記" $ do
-      it "3♠" $ (show $ Card Spade Three) `shouldBe` "3♠"
-      it "5♥" $ (show $ Card Heart Five) `shouldBe` "5♥"
-      it "3♣" $ (show $ Card Club Three) `shouldBe` "3♣"
-      it "K︎♦︎" $ (show $ Card Diamond King) `shouldBe` "K♦︎"
+      it "3♠" $ (show c_3S) `shouldBe` "3♠"
+      it "A♠" $ (show c_aS) `shouldBe` "A♠"
+      it "J♥" $ (show c_jH) `shouldBe` "J♥"
+      it "Q♣" $ (show c_qC) `shouldBe` "Q♣"
+      it "K︎♦︎" $ (show c_kD) `shouldBe` "K♦︎"
 
     describe "カードの比較" $ do 
-      let threeOfSpades = Card Spade Three
-      let aceOfSpades = Card Spade Ace
-      let aceOfHearts = Card Heart Ace
-      it "3♠とA♠は同じスートを持つ" $ (threeOfSpades `hasSameSuit` aceOfSpades) `shouldBe` True
-      it "3♠とA♥は異なるスートを持つ" $ (threeOfSpades `hasSameSuit` aceOfHearts) `shouldBe` False
-      it "3♠とA♠は異なるランクを持つ" $ (threeOfSpades `hasSameRank` aceOfSpades)　`shouldBe` False
-      it "A♠とA♥は同じランクを持つ" $ (aceOfSpades `hasSameRank` aceOfHearts) `shouldBe` True
+      describe "スートの比較" $ do
+        it "3♠とA♠は同じスートを持つ" $ (c_3S `hasSameSuit` c_aS) `shouldBe` True
+        it "3♠とA♥は異なるスートを持つ" $ (c_3S `hasSameSuit` c_aH) `shouldBe` False
+
+      describe "ランクの比較" $ do
+        it "3♠とA♠は異なるランクを持つ" $ (c_3S `hasSameRank` c_aS) `shouldBe` False
+        it "A♠とA♥は同じランクを持つ" $ (c_aS `hasSameRank` c_aH) `shouldBe` True
     
     describe "ツーカードのペアの役" $ do
-      let aceOfSpades = Card Spade Ace
-      let aceOfHearts = Card Heart Ace
-      let kingOfSpades = Card Spade King
-      let sevenOfDia = Card Diamond Seven
-      let sevenOfSpades = Card Spade Seven
-      let eightOfSpades = Card Spade Eight
-
-      let cards = Cards aceOfSpades aceOfHearts
-      it "ペア" $ hand cards `shouldBe` Pair
-
-      let cards2 = Cards aceOfSpades sevenOfSpades
-      it "フラッシュ" $ hand cards2 `shouldBe` Flush
-
-      let cards3 = Cards sevenOfDia aceOfHearts
-      it "ハイカード" $ hand cards3 `shouldBe` HighCard
-
-      let cards4 = Cards kingOfSpades aceOfHearts
-      it "ストレート" $ hand cards4 `shouldBe` Straight
-
-      let cards5 = Cards sevenOfDia eightOfSpades
-      it "ストレート(♦7,♠8)" $ hand cards5 `shouldBe` Straight
-
-      let cards6 = Cards sevenOfSpades eightOfSpades
-      it "ストレートフラッシュ(♠7,♠8)" $ hand cards6 `shouldBe` StraightFlush
+      it "7♠と8♠ はストレートフラッシュである" $ hand (Cards c_7S c_8S) `shouldBe` StraightFlush
+      it "A♠とA♥ はペアである" $ hand (Cards c_aS c_aH) `shouldBe` Pair
+      it "K♠とA♥ はストレートである" $ hand (Cards c_kS c_aH) `shouldBe` Straight
+      it "7♦と8♠ はストレートである" $ hand (Cards c_7D c_8S) `shouldBe` Straight
+      it "A♠と7♠ はフラッシュである" $ hand (Cards c_aS c_7S) `shouldBe` Flush
+      it "7♦とA♥ はハイカードである" $ hand (Cards c_7D c_aH) `shouldBe` HighCard
 
     describe "役の強さを比較する" $ do 
-      let aceOfSpades = Card Spade Ace
-      let aceOfHearts = Card Heart Ace
-      let kingOfSpades = Card Spade King
-      let sevenOfDia = Card Diamond Seven
-      let sevenOfSpades = Card Spade Seven
-      let eightOfSpades = Card Spade Eight
-      let twoOfHearts = Card Heart Two
-      let twoOfSpades = Card Spade Two
-      let threeOfSpades = Card Spade Three
-      let threeOfHearts = Card Heart Three
+      describe "ペア > ハイカード" $ do
+        it "A♠/A♥ > 7♦/A♥" $ Cards c_aS c_aH > Cards c_7D c_aH `shouldBe` True
 
-      let pair = Cards aceOfSpades aceOfHearts
-      let highCard = Cards sevenOfDia aceOfHearts
+      describe "ペア同士の比較" $ do
+        it "2♥/2♠ < 3♥/3♠" $ Cards c_2H c_2S > Cards c_3H c_3S `shouldBe` False
+        it "A♥/A♠ > 2♥/2♠" $ Cards c_aH c_aS > Cards c_2H c_2S `shouldBe` True
+        it "3♥/3♠ と 3♦/3♣ は引き分け" $ Cards c_3H c_3S `compare` Cards c_3D c_3C `shouldBe` EQ
 
-      let twoOfPair = Cards twoOfHearts twoOfSpades
-      let threeOfPair = Cards threeOfHearts threeOfSpades
-      let twoOfPair2 = Cards (Card Diamond Two) (Card Club Two)
+      describe "ストレート同士の比較" $ do
+        it "8♠/7♦ < 8♦/9♠" $ Cards c_8S c_7D < Cards c_8D c_9S `shouldBe` True
+        it "8♦/9♠ > 2♦/A♠" $ Cards c_8D c_9S > Cards c_2D c_aS `shouldBe` True
+        it "8♦/9♠ と 9♥/8♣ は引き分け" $ Cards c_8D c_9S `compare` Cards c_9H c_8C `shouldBe` EQ
 
-      it "ハイカードとフラッシュで比較" $ do
-        HighCard < Flush `shouldBe` True
+      describe "フラッシュ同士の比較" $ do
+        it "4◆/6◆ < 5♥/7♥" $  Cards c_4D c_6D < Cards c_5H c_7H `shouldBe` True
+        it "4◆/7◆ < 5♥/7♥" $  Cards c_4D c_7D < Cards c_5H c_7H `shouldBe` True
+        it "5◆/7◆ と 5♥/7♥ は引き分け" $  Cards c_5D c_7D `compare` Cards c_5H c_7H `shouldBe` EQ
 
-      it "2つの手札が異なる場合" $ do
-        pair > highCard `shouldBe` True
-
-      it "Rankの強弱の比較" $ do
-        Two < Six `shouldBe` True
-
-      it "AceとTwoで比較" $ do
-        Ace > Two `shouldBe` True
-        Two < Ace `shouldBe` True
-
-      it "AceとThreeで比較" $ do
-        Ace > Three `shouldBe` True
-        Three < Ace `shouldBe` True
-      
-      it "Ace同士" $ do 
-        Ace > Ace `shouldBe` False
-        Ace < Ace `shouldBe` False
-        Ace >= Ace `shouldBe` True
-        Ace <= Ace `shouldBe` True
-
-      it "ペア同士の比較" $ do
-        twoOfPair > threeOfPair `shouldBe` False
-        threeOfPair > twoOfPair `shouldBe` True
-        twoOfPair `compare` twoOfPair2 `shouldBe` EQ
-
-      it "ストレート同士の比較" $ do 
-        let straight = Cards eightOfSpades sevenOfDia
-        let straight2 = Cards (Card Diamond Eight) (Card Spade Nine)
-        let straight3 = Cards (Card Diamond Two) (Card Spade Ace)
-        let straight4 = Cards (Card Heart Nine) (Card Club Eight)
-
-        straight < straight2 `shouldBe` True
-        straight2 < straight3 `shouldBe` False
-        straight2 `compare` straight4 `shouldBe` EQ
-
-      it "フラッシュ同士の比較" $ do
-        let flush = Cards (Card Diamond Four) (Card Diamond Six)
-        hand flush `shouldBe` Flush
-        let flush2 = Cards (Card Heart Five) (Card Heart Seven)
-        hand flush2 `shouldBe` Flush
-        let flush3 = Cards (Card Diamond Four) (Card Diamond Seven)
-        hand flush3 `shouldBe` Flush
-
-        flush < flush2 `shouldBe` True
-        flush3 < flush2 `shouldBe` True
-
-      it "ハイカード同士の比較" $ do
-        let highCard = Cards (Card Diamond Five) (Card Heart Seven)
-        hand highCard `shouldBe` HighCard
-        let highCard2 = Cards (Card Spade Four) (Card Diamond Seven)
-        hand highCard2 `shouldBe` HighCard
-        let highCard3 = Cards (Card Diamond Four) (Card Club Six)
-        hand highCard3 `shouldBe` HighCard
-
-        highCard > highCard2 `shouldBe` True
-        highCard3 < highCard2 `shouldBe` True
+      describe "ハイカード同士の比較" $ do
+        it "4◆/6♣ < 4♠/7◆" $ Cards c_4D c_6C < Cards c_4S c_7D `shouldBe` True
+        it "5◆/7♥ > 4♠/7◆" $ Cards c_5D c_7H > Cards c_4S c_7D `shouldBe` True
+        it "5◆/7♥ と 5♠/7◆ は引き分け" $ Cards c_5D c_7H `compare` Cards c_5S c_7D `shouldBe` EQ
