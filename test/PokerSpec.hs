@@ -45,16 +45,16 @@ spec = do
         it "3♥/3♠ と 3♦/3♣ は引き分け" $ Cards c_3H c_3S `compare` Cards c_3D c_3C `shouldBe` EQ
 
       describe "ストレート同士の比較" $ do
-        it "8♠/7♦ < 8♦/9♠" $ Cards c_8S c_7D < Cards c_8D c_9S `shouldBe` True
-        it "8♦/9♠ > 2♦/A♠" $ Cards c_8D c_9S > Cards c_2D c_aS `shouldBe` True
+        it "K♠/Q♦ < K♦/A♠" $ Cards c_kS c_qD < Cards c_kD c_aS `shouldBe` True
+        it "2♦/3♠ > 2♦/A♠" $ Cards c_2D c_3S > Cards c_2D c_aS `shouldBe` True
         it "8♦/9♠ と 9♥/8♣ は引き分け" $ Cards c_8D c_9S `compare` Cards c_9H c_8C `shouldBe` EQ
 
       describe "フラッシュ同士の比較" $ do
-        it "4◆/6◆ < 5♥/7♥" $  Cards c_4D c_6D < Cards c_5H c_7H `shouldBe` True
-        it "4◆/V7◆ < 5♥/7♥" $  Cards c_4D c_7D < Cards c_5H c_7H `shouldBe` True
+        it "A◆/Q◆ > J♥/K♥" $  Cards c_aD c_qD > Cards c_jH c_kH `shouldBe` True
+        it "4◆/2◆ < 3♥/5♥" $  Cards c_4D c_2D < Cards c_3H c_5H `shouldBe` True
         it "5◆/7◆ と 5♥/7♥ は引き分け" $  Cards c_5D c_7D `compare` Cards c_5H c_7H `shouldBe` EQ
 
       describe "ハイカード同士の比較" $ do
-        it "4◆/6♣ < 4♠/7◆" $ Cards c_4D c_6C < Cards c_4S c_7D `shouldBe` True
-        it "5◆/7♥ > 4♠/7◆" $ Cards c_5D c_7H > Cards c_4S c_7D `shouldBe` True
+        it "A◆/Q♣ > J♠/K◆" $ Cards c_aD c_qC > Cards c_jS c_kD `shouldBe` True
+        it "4◆/2♥ < 3♠/5◆" $ Cards c_4D c_2H < Cards c_3S c_5D `shouldBe` True
         it "5◆/7♥ と 5♠/7◆ は引き分け" $ Cards c_5D c_7H `compare` Cards c_5S c_7D `shouldBe` EQ
