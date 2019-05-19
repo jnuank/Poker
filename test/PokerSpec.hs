@@ -65,20 +65,29 @@ spec = do
       it "A♥とA♣とA◆ はスリーカードである" $ threeHand (ThreeCards c_aH c_aC c_aD) `shouldBe` ThreeCard
       it "2♥と4♥と6♥ はフラッシュである" $ threeHand (ThreeCards c_2H c_4H c_6H) `shouldBe` Flush
     
-      describe "ペアの判定" $ do 
+      describe "ペア" $ do 
         it "K♥とK♣とA♥ はペアである" $ threeHand (ThreeCards c_kH c_kC c_aH) `shouldBe` Pair
         it "2♥と3♣と2◆ はペアである" $ threeHand (ThreeCards c_2H c_3C c_2D) `shouldBe` Pair
         it "2♥と3♣と3◆ はペアである" $ threeHand (ThreeCards c_2H c_3C c_3D) `shouldBe` Pair
 
-      describe "ストレートの判定" $ do 
+      describe "ストレート" $ do 
         it "A♥とK♥とQ◆ はストレートである" $ threeHand  (ThreeCards c_aH c_kH c_qD) `shouldBe` Straight 
         it "K♥とA♥とQ◆ はストレートである" $ threeHand  (ThreeCards c_kH c_aH c_qD) `shouldBe` Straight 
         it "2♥とA♥と3◆ はストレートである" $ threeHand  (ThreeCards c_2H c_aH c_3D) `shouldBe` Straight 
 
-        -- it "7♠と8♠ はストレートフラッシュである" $ hand (Cards c_7S c_8S) `shouldBe` StraightFlush
-      -- it "A♠とA♥ はペアである" $ hand (Cards c_aS c_aH) `shouldBe` Pair
-      -- it "K♠とA♥ はストレートである" $ hand (Cards c_kS c_aH) `shouldBe` Straight
-      -- it "7♦と8♠ はストレートである" $ hand (Cards c_7D c_8S) `shouldBe` Straight
-      -- it "A♠と7♠ はフラッシュである" $ hand (Cards c_aS c_7S) `shouldBe` Flush
-      -- it "7♦とA♥ はハイカードである" $ hand (Cards c_7D c_aH) `shouldBe` HighCard
-          
+      describe "ストレートフラッシュ" $ do
+        it "A♥とK♥とQ♥ はストレートフラッシュである" $ threeHand  (ThreeCards c_aH c_kH c_qH) `shouldBe` StraightFlush 
+        it "K◆とA◆とQ◆ はストレートフラッシュである" $ threeHand  (ThreeCards c_kD c_aD c_qD) `shouldBe` StraightFlush 
+        it "2♠とA♠と3♠ はストレートフラッシュである" $ threeHand  (ThreeCards c_2S c_aS c_3S) `shouldBe` StraightFlush 
+      
+      describe "ハイカード" $ do 
+        it "K♥と2♥とA♠ はハイカードである" $ threeHand (ThreeCards c_kH c_2H c_aS) `shouldBe` HighCard
+
+  describe "手札の中で最弱のランクを出す" $ do 
+    it "Aと2と3 なら Aが最弱" $ lowestRank [Ace, Three, Two] `shouldBe` Ace
+    it "AとKとQ なら Qが最弱" $ lowestRank [Ace, King, Queen] `shouldBe` Queen 
+    it "Aと2なら     Aが最弱" $ lowestRank [Ace, Two] `shouldBe` Ace
+
+  describe "orderingCardsWithHand" $ do 
+    it "Aと2と3 なら 3,2,A" $ pending
+    it "Aと2と2 なら 2,2,A" $ pending

@@ -29,35 +29,42 @@ instance Ord TwoCardHand where
 
 hand :: Cards -> Hand
 hand (Cards first second)
-  | isStraight cards && isFlush = StraightFlush
+  | isStraightFlush cards = StraightFlush
   | isPair cards = Pair
   | isStraight cards = Straight
-  | isFlush = Flush
+  | isFlush cards = Flush
   | otherwise = HighCard
   where
     cards = [first, second]  
-    isFlush = first `hasSameSuit` second
 
 threeHand :: ThreeCards -> Hand 
 threeHand (ThreeCards first second third) 
-  | isThreeCard = ThreeCard
+  | isStraightFlush cards = StraightFlush
+  | isThreeCard cards = ThreeCard
   | isStraight cards = Straight
-  | isFlush = Flush
+  | isFlush cards = Flush
   | isPair cards = Pair
   | otherwise = HighCard
   where 
     cards = [first,second,third]
-    isThreeCard = all (hasSameRank first) [second,third]
-    isFlush = all (hasSameSuit first) [second,third]
 
 isPair :: [Card] -> Bool
 isPair cards = or [ x `hasSameRank` y | x <- cards, y <- cards, x /= y]
+
+isFlush :: [Card] -> Bool
+isFlush (card:cards) = all (hasSameSuit card) cards
+
+isThreeCard :: [Card] -> Bool 
+isThreeCard  (card:cards) = all (hasSameRank card) cards 
 
 isStraight :: [Card] -> Bool
 isStraight = isConsecutiveRanks . map rank
   where 
     isConsecutiveRanks :: [Rank] -> Bool 
     isConsecutiveRanks = or . map (scanPairs (\l r -> r - l == 1)) . orderCandidates  
+
+isStraightFlush :: [Card] -> Bool 
+isStraightFlush cards = isStraight cards && isFlush cards
 
 data Cards = Cards Card Card
   deriving (Show, Eq)
@@ -92,3 +99,12 @@ scanPairs f [left, right] = f left right
 scanPairs f (left:right:rest)
   | f left right = scanPairs f (right:rest)
   | otherwise = False
+
+lowestRank :: [Rank] -> Rank 
+lowestRank [Ace, Two] = Ace
+lowestRank [Ace, Three, Two] = Ace
+lowestRank ranks = minimum ranks
+
+-- 役によって、カード自体を並び替えして返す
+orderingCardsWithHand :: [Card] -> [Card]
+orderingCardsWithHand = undefined
