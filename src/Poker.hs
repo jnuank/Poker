@@ -29,39 +29,35 @@ instance Ord TwoCardHand where
 
 hand :: Cards -> Hand
 hand (Cards first second)
-  | isStraight && isFlush = StraightFlush
-  | isPair [first, second] = Pair
-  | isStraight = Straight
+  | isStraight cards && isFlush = StraightFlush
+  | isPair cards = Pair
+  | isStraight cards = Straight
   | isFlush = Flush
   | otherwise = HighCard
   where
+    cards = [first, second]  
     isFlush = first `hasSameSuit` second
-    isStraight = rank first `isConsecutiveRank` rank second
 
 threeHand :: ThreeCards -> Hand 
 threeHand (ThreeCards first second third) 
   | isThreeCard = ThreeCard
-  | isStraight = Straight
+  | isStraight cards = Straight
   | isFlush = Flush
-  | isPair [first,second,third] = Pair
+  | isPair cards = Pair
   | otherwise = HighCard
   where 
+    cards = [first,second,third]
     isThreeCard = all (hasSameRank first) [second,third]
     isFlush = all (hasSameSuit first) [second,third]
-    isStraight = isConsecutiveThreeRank (rank first) (rank second) (rank third)
 
 isPair :: [Card] -> Bool
 isPair cards = or [ x `hasSameRank` y | x <- cards, y <- cards, x /= y]
 
-isConsecutiveRank :: Rank -> Rank -> Bool
-isConsecutiveRank King Ace = True
-isConsecutiveRank Ace King = True
-isConsecutiveRank first second = abs (fromEnum first - fromEnum second) == 1
-
-isConsecutiveThreeRank :: Rank -> Rank -> Rank -> Bool 
-isConsecutiveThreeRank first second third = 
-  let sorted = map sort $ order first second third
-  in or $ map (hoge (\l r -> r - l == 1)) sorted  
+isStraight :: [Card] -> Bool
+isStraight = isConsecutiveRanks . map rank
+  where 
+    isConsecutiveRanks :: [Rank] -> Bool 
+    isConsecutiveRanks = or . map (scanPairs (\l r -> r - l == 1)) . orderCandidates  
 
 data Cards = Cards Card Card
   deriving (Show, Eq)
@@ -84,23 +80,15 @@ compareCardsWithRank = compare `on` sortCards
       other -> other
       where descSortedCards = reverse . sort $ [left, right]
 
-orderCandidates :: Rank -> [Int]
-orderCandidates Ace = [1, 14]
-orderCandidates x = [fromEnum x + 1]
-
-isStraight :: [Int] -> Bool
-isStraight ranks = last sorted - head sorted == 2
+orderCandidates :: [Rank] -> [[Int]]
+orderCandidates ranks = map sort $ sequence $ map candidates ranks
   where 
-    sorted = sort ranks
+    candidates :: Rank -> [Int]
+    candidates Ace = [1, 14]
+    candidates x = [fromEnum x + 1]
 
-order f s t = do
-  f' <- orderCandidates f
-  s' <- orderCandidates s 
-  t' <- orderCandidates t
-  return [f', s', t']
-
-hoge :: (a -> a -> Bool) -> [a] -> Bool
-hoge f [left, right] = f left right
-hoge f (left:right:rest)
-  | f left right = hoge f (right:rest)
+scanPairs :: (a -> a -> Bool) -> [a] -> Bool
+scanPairs f [left, right] = f left right
+scanPairs f (left:right:rest)
+  | f left right = scanPairs f (right:rest)
   | otherwise = False
