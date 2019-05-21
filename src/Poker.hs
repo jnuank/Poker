@@ -3,6 +3,7 @@ module Poker where
 import Data.List
 import Card
 import Data.Function
+import Data.Ord
 
 instance Ord Rank where
   _ <= Ace = True
@@ -25,6 +26,18 @@ instance Ord TwoCardHand where
       strength Pair = 4
       strength Straight = 3
       strength Flush = 2
+      strength HighCard = 1
+
+newtype ThreeCardHand = ThreeCardHand { fromThreeCardHand :: Hand } deriving (Eq)
+instance Ord ThreeCardHand where 
+  compare = compare `on` strength . fromThreeCardHand
+    where 
+      strength :: Hand -> Int 
+      strength StraightFlush = 6
+      strength ThreeCard = 5
+      strength Straight = 4
+      strength Flush = 3
+      strength Pair = 2 
       strength HighCard = 1
 
 hand :: Cards -> Hand
@@ -72,11 +85,13 @@ data Cards = Cards Card Card
 data ThreeCards = ThreeCards Card Card Card
   deriving (Show, Eq)
 
-
 instance Ord Cards where
   compare left right = case (compare `on` TwoCardHand . hand) left right of
     EQ -> compareCardsWithRank left right
     other -> other
+
+instance Ord ThreeCards where 
+  compare = compare `on` ThreeCardHand . threeHand
 
 compareCardsWithRank :: Cards -> Cards -> Ordering
 compareCardsWithRank = compare `on` sortCards
@@ -107,4 +122,10 @@ lowestRank ranks = minimum ranks
 
 -- 役によって、カード自体を並び替えして返す
 orderingCardsWithHand :: [Card] -> [Card]
-orderingCardsWithHand = undefined
+orderingCardsWithHand cards = 
+  case sorted of 
+    [f@(Card _ Ace), s@(Card _ Three), t@(Card _ Two)] -> [s, t, f]
+    [f, s, t] | rank s == rank t -> [s, t, f]
+    other -> other         
+    where
+      sorted = sortOn Down cards
