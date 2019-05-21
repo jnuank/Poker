@@ -91,7 +91,17 @@ instance Ord Cards where
     other -> other
 
 instance Ord ThreeCards where 
-  compare = compare `on` ThreeCardHand . threeHand
+  compare = compareWithTpl (ThreeCardHand . threeHand, orderCards)
+    where 
+      orderCards :: ThreeCards -> [Card]
+      orderCards (ThreeCards first second third) = orderingCardsWithHand [first, second, third]
+  --  compare = compare `on` ThreeCardHand . threeHand
+
+compareWithTpl :: (Ord a, Ord b) => (c -> a, c -> b) -> c -> c -> Ordering 
+compareWithTpl (f, g) = compare `on` do 
+  a <- f
+  b <- g
+  return (a, b)
 
 compareCardsWithRank :: Cards -> Cards -> Ordering
 compareCardsWithRank = compare `on` sortCards
