@@ -1,3 +1,7 @@
+{-# LANGUAGE TypeFamilyDependencies #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE ConstrainedClassMethods #-}
+
 module Poker.Hand where 
 
 import Data.List
@@ -8,11 +12,38 @@ import Data.Ord
 data Hand =  HighCard | Flush | Straight | Pair | StraightFlush | ThreeCard
   deriving (Show, Ord, Eq)
 
+newtype TwoCardHand = TwoCardHand { fromTwoCardHand :: Hand } deriving (Eq)
+instance Ord TwoCardHand where
+  compare  = compare `on` strength . fromTwoCardHand
+    where
+      strength :: Hand -> Int
+      strength StraightFlush = 5
+      strength Pair = 4
+      strength Straight = 3
+      strength Flush = 2
+      strength HighCard = 1
+
+newtype ThreeCardHand = ThreeCardHand { fromThreeCardHand :: Hand } deriving (Eq)
+instance Ord ThreeCardHand where
+  compare = compare `on` strength . fromThreeCardHand
+    where
+      strength :: Hand -> Int
+      strength StraightFlush = 6
+      strength ThreeCard = 5
+      strength Straight = 4
+      strength Flush = 3
+      strength Pair = 2
+      strength HighCard = 1
+  
+
 class Cards a where 
+  type HandOf a = (h :: *) | h -> a
   hand :: a -> Hand
   fromCards :: a -> [Card]
+  wrapHand :: Ord (HandOf a) => Hand -> HandOf a
 
 instance Cards TwoCards where 
+  type HandOf TwoCards = TwoCardHand
   hand (TwoCards first second)
     | isStraightFlush cards = StraightFlush
     | isPair cards = Pair
@@ -22,8 +53,10 @@ instance Cards TwoCards where
     where
       cards = [first, second]
   fromCards (TwoCards first second) = [first, second]
+  wrapHand = TwoCardHand
 
 instance Cards ThreeCards where 
+  type HandOf ThreeCards = ThreeCardHand
   hand (ThreeCards first second third)
     | isStraightFlush cards = StraightFlush
     | isThreeCard cards = ThreeCard
@@ -34,6 +67,7 @@ instance Cards ThreeCards where
     where
       cards = [first,second,third]
   fromCards (ThreeCards first second third) = [first, second, third]
+  wrapHand = ThreeCardHand
 
 data TwoCards = TwoCards Card Card
   deriving (Show, Eq)

@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 module Poker.Poker where
 
 import Data.List
@@ -15,40 +17,18 @@ instance Ord Rank where
 instance Ord Card where
   compare = compare `on` rank
 
-newtype TwoCardHand = TwoCardHand { fromTwoCardHand :: Hand } deriving (Eq)
-instance Ord TwoCardHand where
-  compare  = compare `on` strength . fromTwoCardHand
-    where
-      strength :: Hand -> Int
-      strength StraightFlush = 5
-      strength Pair = 4
-      strength Straight = 3
-      strength Flush = 2
-      strength HighCard = 1
-
-newtype ThreeCardHand = ThreeCardHand { fromThreeCardHand :: Hand } deriving (Eq)
-instance Ord ThreeCardHand where
-  compare = compare `on` strength . fromThreeCardHand
-    where
-      strength :: Hand -> Int
-      strength StraightFlush = 6
-      strength ThreeCard = 5
-      strength Straight = 4
-      strength Flush = 3
-      strength Pair = 2
-      strength HighCard = 1
+compare' :: (Cards a, Ord (HandOf a)) => a -> a -> Ordering
+compare' = compareWithTpl (hand', orderCards)
+  where
+    hand' :: (Cards a, Ord (HandOf a)) => a -> HandOf a
+    hand' = wrapHand . hand
+    orderCards = orderingCardsWithHand . fromCards
 
 instance Ord TwoCards where
-  compare = compareWithTpl (TwoCardHand . hand, orderCards)
-    where 
-      orderCards :: TwoCards -> [Card]
-      orderCards = orderingCardsWithHand . fromCards 
+  compare = compare'
 
 instance Ord ThreeCards where
-  compare = compareWithTpl (ThreeCardHand . hand, orderCards)
-    where
-      orderCards :: ThreeCards -> [Card]
-      orderCards = orderingCardsWithHand . fromCards
+  compare = compare'
 
 compareWithTpl :: (Ord a, Ord b) => (c -> a, c -> b) -> c -> c -> Ordering
 compareWithTpl (f, g) = compare `on` do
