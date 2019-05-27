@@ -125,13 +125,3 @@ spec = do
           it "A◆/K♠/J♠ > K◆/Q♥/10♥" $ ThreeCards c_aD c_kS c_jS > ThreeCards c_kD c_qH c_10H `shouldBe` True
           it "2◆/4♠/5♠ > 5◆/2♥/3♥" $ ThreeCards c_2D c_4S c_5S > ThreeCards c_5D c_2H c_3H `shouldBe` True
           it "A◆/K♣/J♣ と A◆/K♥/J♥ は引き分け" $ ThreeCards c_aD c_kC c_jC `compare` ThreeCards c_aD c_kH c_jH `shouldBe` EQ
-
-  describe "手札の中で最弱のランクを出す" $ do 
-    it "Aと2と3 なら Aが最弱" $ lowestRank [Ace, Three, Two] `shouldBe` Ace
-    it "AとKとQ なら Qが最弱" $ lowestRank [Ace, King, Queen] `shouldBe` Queen 
-    it "Aと2なら     Aが最弱" $ lowestRank [Ace, Two] `shouldBe` Ace
-
-  describe "orderingCardsWithHand" $ do 
-    it "Aと2と3 なら 3,2,A" $ orderingCardsWithHand [c_aC, c_2D, c_3H] `shouldBe` [c_3H, c_2D, c_aC]
-    it "Aと2と2 なら 2,2,A" $ orderingCardsWithHand [c_aC, c_2D, c_2H] `shouldBe` [c_2D, c_2H, c_aC]
-    it "3と3と2 なら 3,3,2" $ orderingCardsWithHand [c_3C, c_3D, c_2H] `shouldBe` [c_3C, c_3D, c_2H]

@@ -15,7 +15,7 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Poker, Poker.Poker, Poker.Hand Card
+  exposed-modules:     Poker, Poker.Cards, Poker.Ord, Poker.Hand, Poker.TwoCards, Poker.ThreeCards Card
   build-depends:       base >= 4.7 && < 5
   default-language:    Haskell2010
 
