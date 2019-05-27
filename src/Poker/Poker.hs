@@ -42,13 +42,13 @@ instance Ord TwoCards where
   compare = compareWithTpl (TwoCardHand . hand, orderCards)
     where 
       orderCards :: TwoCards -> [Card]
-      orderCards (TwoCards first second ) = orderingCardsWithHand [first, second]
+      orderCards = orderingCardsWithHand . fromCards 
 
 instance Ord ThreeCards where
   compare = compareWithTpl (ThreeCardHand . hand, orderCards)
     where
       orderCards :: ThreeCards -> [Card]
-      orderCards (ThreeCards first second third) = orderingCardsWithHand [first, second, third]
+      orderCards = orderingCardsWithHand . fromCards
 
 compareWithTpl :: (Ord a, Ord b) => (c -> a, c -> b) -> c -> c -> Ordering
 compareWithTpl (f, g) = compare `on` do

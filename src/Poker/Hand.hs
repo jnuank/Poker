@@ -10,6 +10,7 @@ data Hand =  HighCard | Flush | Straight | Pair | StraightFlush | ThreeCard
 
 class Cards a where 
   hand :: a -> Hand
+  fromCards :: a -> [Card]
 
 instance Cards TwoCards where 
   hand (TwoCards first second)
@@ -20,6 +21,7 @@ instance Cards TwoCards where
     | otherwise = HighCard
     where
       cards = [first, second]
+  fromCards (TwoCards first second) = [first, second]
 
 instance Cards ThreeCards where 
   hand (ThreeCards first second third)
@@ -31,6 +33,7 @@ instance Cards ThreeCards where
     | otherwise = HighCard
     where
       cards = [first,second,third]
+  fromCards (ThreeCards first second third) = [first, second, third]
 
 data TwoCards = TwoCards Card Card
   deriving (Show, Eq)
