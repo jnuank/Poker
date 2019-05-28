@@ -1,44 +1,72 @@
-name:                Poker
-version:             0.1.0.0
--- synopsis:
--- description:
-homepage:            https://github.com/jnuank/Poker#readme
-license:             BSD3
-license-file:        LICENSE
-author:              Jun Nakajima
-maintainer:          ikuta1919@gmail.com
-copyright:           2019 Jun Nakajima
-category:            Development
-build-type:          Simple
-extra-source-files:  README.md
-cabal-version:       >=1.10
+cabal-version: 1.12
 
-library
-  hs-source-dirs:      src
-  exposed-modules:     Poker, Poker.Cards, Poker.Ord, Poker.Hand, Poker.TwoCards, Poker.ThreeCards, Poker.FiveCards Card
-  build-depends:       base >= 4.7 && < 5
-                     , containers
-  default-language:    Haskell2010
+-- This file has been generated from package.yaml by hpack version 0.31.1.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: cce937e6056c2b66554e1e82555ad180506fde433554966a8af63d2550f80b8c
 
-executable Poker
-  hs-source-dirs:      app
-  main-is:             Main.hs
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
-  build-depends:       base
-                     , Poker
-  default-language:    Haskell2010
-
-test-suite Poker-test
-  type:                exitcode-stdio-1.0
-  hs-source-dirs:      test
-  main-is:             Spec.hs
-  build-depends:       base
-                     , Poker
-                     , hspec
-                     , QuickCheck
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
-  default-language:    Haskell2010
+name:           Poker
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/githubuser/Poker#readme>
+homepage:       https://github.com/githubuser/Poker#readme
+bug-reports:    https://github.com/githubuser/Poker/issues
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2019 Author name here
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
 
 source-repository head
-  type:     git
-  location: https://github.com/jnuank/Poker
+  type: git
+  location: https://github.com/githubuser/Poker
+
+library
+  exposed-modules:
+      Card
+      Poker
+      Poker.Cards
+      Poker.FiveCards
+      Poker.Hand
+      Poker.Ord
+      Poker.ThreeCards
+      Poker.TwoCards
+  other-modules:
+      Paths_Poker
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+  default-language: Haskell2010
+
+executable Poker-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_Poker
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      Poker
+    , base >=4.7 && <5
+  default-language: Haskell2010
+
+test-suite Poker-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      CardSpec
+      PokerSpec
+      Paths_Poker
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      Poker
+    , base >=4.7 && <5
+    , hspec
+  default-language: Haskell2010
