@@ -1,10 +1,12 @@
 module Poker.Hand where
 
-import Card
 import Data.List
 
+import Card
+
 -- 役のデータ構造
-data Hand = HighCard | Flush | Straight | Pair | StraightFlush | ThreeCard
+data Hand = HighCard | Flush | Straight | Pair | StraightFlush | ThreeCard 
+          | RoyalStraightFlush | FourCard | FullHouse | TwoPair
   deriving (Show, Ord, Eq)
 
 -- 役の判定で使用する関数群
