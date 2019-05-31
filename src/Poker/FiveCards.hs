@@ -14,22 +14,31 @@ data FiveCards = FiveCards Card Card Card Card Card
   deriving (Show, Eq)
 
 newtype FiveCardHand = FiveCardHand { fromFiveCardHand :: Hand } deriving (Eq)
-instance Ord FiveCardHand where 
+instance Ord FiveCardHand where
   compare = compare `on` strength . fromFiveCardHand
     where
       hands = [HighCard, Pair, TwoPair, ThreeCard, Straight, Flush, FullHouse, FourCard, StraightFlush, RoyalStraightFlush]
       strength :: Hand -> Int
       strength hand = case elemIndex hand hands of (Just i) -> i
-      
+
 instance Cards FiveCards where
-    type HandOf FiveCards = FiveCardHand 
+    type HandOf FiveCards = FiveCardHand
     hand (FiveCards first second third fourth fifth)
       | isRoyalStraightFlush cards = RoyalStraightFlush
-      where 
+      | isStraightFlush cards = StraightFlush
+      | isFourCard cards = FourCard
+      | isFullHouse cards = FullHouse
+      | isFlush cards = Flush
+      | isStraight cards = Straight
+      | isThreeCard cards = ThreeCard
+      | isTwoPair cards = TwoPair
+      | isPair cards = Pair
+      | otherwise = HighCard
+      where
         cards = [first, second, third, fourth, fifth]
     wrapHand = undefined
     orderCards = undefined
-  
+
 isRoyalStraightFlush :: [Card] -> Bool
 isRoyalStraightFlush cards = isFlush cards && isRoyalRank
   where
@@ -38,3 +47,5 @@ isRoyalStraightFlush cards = isFlush cards && isRoyalRank
       case sorted of
         [Card _ Ten, Card _ Jack, Card _ Queen, Card _ King, Card _ Ace] -> True
         _ -> False
+
+

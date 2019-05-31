@@ -25,7 +25,7 @@ instance Ord ThreeCardHand where
       strength Pair = 2
       strength HighCard = 1
 
-instance Cards ThreeCards where 
+instance Cards ThreeCards where
   type HandOf ThreeCards = ThreeCardHand
   hand (ThreeCards first second third)
     | isStraightFlush cards = StraightFlush
@@ -38,7 +38,7 @@ instance Cards ThreeCards where
       cards = [first,second,third]
   wrapHand = ThreeCardHand
   orderCards (ThreeCards first second third) =
-      case sorted of 
+      case sorted of
         [f@(Card _ Ace), s@(Card _ Three), t@(Card _ Two)] -> [s, t, f]
         [f, s, t] | rank s == rank t -> [s, t, f]
         other -> other
