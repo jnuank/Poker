@@ -46,25 +46,12 @@ isStraight :: [Card] -> Bool
 isStraight = isConsecutiveRanks . map rank
   where
     isConsecutiveRanks :: [Rank] -> Bool
-    isConsecutiveRanks = or . map (scanPairs (\l r -> r - l == 1)) . orderCandidates
-    -- [[Int]] -> [([Int], [Int])]
-    -- [[1,2,3],[14,2,3]] -> [[(1,2),(2,3)],[(14,2),(2,3)]]
-    -- [[(Int, Int)]]    (\ls ->  map (\x -> zip x (drop 1 x)) ls)
-    -- [[(Int, Int)]] -> [[True,True],[False,True]]
-    -- [[True,True],[False,True]] -> [True, False] -> True 　　map and . or
-    -- [t Bool] -> [Bool] ← map and
-    -- [Bool] -> Bool　←　or
+    isConsecutiveRanks = or . map and . map ( map (\(l,r) -> r - l == 1)) . map (\x -> zip x (drop 1 x)) . orderCandidates
     orderCandidates :: [Rank] -> [[Int]]
     orderCandidates ranks = map sort $ sequence $ map candidates ranks
-      where
-        candidates :: Rank -> [Int]
-        candidates Ace = [1, 14]
-        candidates x = [fromEnum x + 1]
-    scanPairs :: (a -> a -> Bool) -> [a] -> Bool
-    scanPairs f [left, right] = f left right
-    scanPairs f (left:right:rest)
-      | f left right = scanPairs f (right:rest)
-      | otherwise = False
+    candidates :: Rank -> [Int]
+    candidates Ace = [1, 14]
+    candidates x = [fromEnum x + 1]
 
 isStraightFlush :: [Card] -> Bool
 isStraightFlush cards = isStraight cards && isFlush cards
